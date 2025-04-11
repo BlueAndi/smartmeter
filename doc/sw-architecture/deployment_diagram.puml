@@ -1,0 +1,39 @@
+@startuml deployment_diagram
+
+title Deployment Diagram
+
+node "Olimex ESP23-POE-ISO-IND" {
+
+    node "ESP32" as esp32 {
+        component "Software" as sw
+    }
+
+    component "EXT1" as ext1 <<connector>>
+}
+
+node "Eltako DSZ15D\nElectricity Meter\nHome" as emeterHome
+node "Eltako DSZ15D\nElectricity Meter\nHeatpump" as emeterHeatpump
+
+interface "S0" as s0Home
+interface "S0" as s0Heatpump
+
+emeterHome -- s0Home
+emeterHeatpump -- s0Heatpump
+
+s0Home )--- ext1
+s0Heatpump )--- ext1
+
+note right of s0Home
+    1000 pulses per kWh
+end note
+
+note left of s0Heatpump
+    1000 pulses per kWh
+end note
+
+note bottom of ext1
+    GPIO 3 - Home
+    GPIO 4 - Heatpump
+end note
+
+@enduml

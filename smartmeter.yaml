@@ -1,0 +1,109 @@
+# ESPHome configuration for the IVT Rego 600/601 heat pump controller.
+# https://esphome.io/index.html
+esphome:
+  name: smartmeter
+  friendly_name: Smartmeter
+  area: Heating room
+  project:
+    name: "BlueAndi.smartmeter"
+    version: "0.1.0"
+
+# Platform configuration.
+# https://esphome.io/components/esp32.html
+esp32:
+  board: esp32-poe-iso
+  framework:
+    type: arduino
+
+# Enable logging.
+# https://esphome.io/components/logger.html
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API.
+# https://esphome.io/components/api.html
+api:
+  password: ""
+  reboot_timeout: 0s
+  actions:
+    - action: set_total_home
+      variables:
+        new_total: int
+      then:
+        - pulse_meter.set_total_pulses:
+            id: power_consumption_home
+            value: !lambda 'return new_total;'
+    - action: set_total_heatpump
+      variables:
+        new_total: int
+      then:
+        - pulse_meter.set_total_pulses:
+            id: power_consumption_heatpump
+            value: !lambda 'return new_total;'
+
+# Enable OTA updates.
+# https://esphome.io/components/ota.html
+ota:
+  - platform: esphome
+    password: ""
+
+# Enable ethernet interface.
+# https://esphome.io/components/ethernet.html
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk_mode: GPIO17_OUT
+  phy_addr: 0
+  power_pin:
+    number: GPIO12
+    ignore_strapping_warning: true
+
+# Webserver configuration
+# https://esphome.io/components/web_server.html
+web_server:
+  port: 80
+  version: 3
+
+# MQTT configuration
+mqtt:
+  broker: homeassistant.fritz.box
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  reboot_timeout: 0s
+  birth_message:
+    topic: smartmeter/status
+    payload: "online"
+  will_message:
+    topic: smartmeter/status
+    payload: "offline"
+
+sensor:
+  - platform: pulse_meter
+    pin: GPIO3
+    name: "Power Consumption Home"
+    id: power_consumption_home
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    internal_filter: 200ms # Assuming maximum load of 16 kW and 1000 impulses per kWh, any pulses faster than 225 ms would exceed load. -10% ~= 20 ms.
+    accuracy_decimals: 0
+    filters:
+      - multiply: 60 # (60s / impulse constant) * (1000W / 1kW)
+    total:
+          name: "Energy Consumption Home"
+
+  - platform: pulse_meter
+    pin: GPIO4
+    name: "Power Consumption Heatpump"
+    id: power_consumption_heatpump
+    unit_of_measurement: "W"
+    device_class: power
+    state_class: measurement
+    internal_filter: 200ms # Assuming maximum load of 16 kW and 1000 impulses per kWh, any pulses faster than 225 ms would exceed load. -10% ~= 20 ms.
+    accuracy_decimals: 0
+    filters:
+      - multiply: 60 # (60s / impulse constant) * (1000W / 1kW)
+    total:
+          name: "Energy Consumption Heatpump"
