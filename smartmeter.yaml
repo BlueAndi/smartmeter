@@ -82,6 +82,16 @@ ethernet:
 web_server:
   port: 80
   version: 3
+  sorting_groups:
+    - id: sg_power
+      name: "Power"
+      sorting_weight: 10
+    - id: sg_energy
+      name: "Energy"
+      sorting_weight: 20
+    - id: sg_config
+      name: "Configuration"
+      sorting_weight: 30
 
 # MQTT configuration
 mqtt:
@@ -128,6 +138,12 @@ sensor:
       - multiply: 60 # (60s / impulse constant) * (1000W / 1kW)
     total:
           name: "Energy Consumption Home"
+          web_server:
+            sorting_group_id: sg_energy
+            sorting_weight: 10
+    web_server:
+      sorting_group_id: sg_power
+      sorting_weight: 10
 
   - platform: pulse_meter
     pin: GPIO15
@@ -142,3 +158,38 @@ sensor:
       - multiply: 60 # (60s / impulse constant) * (1000W / 1kW)
     total:
           name: "Energy Consumption Heatpump"
+          web_server:
+            sorting_group_id: sg_energy
+            sorting_weight: 20
+    web_server:
+      sorting_group_id: sg_power
+      sorting_weight: 20
+
+# Button configuration
+# https://esphome.io/components/button/index.html
+button:
+  - platform: template
+    id: zero_power_consumption_home
+    name: "Reset power consumption home"
+    icon: mdi:button-pointer
+    on_press:
+      then:
+         - pulse_meter.set_total_pulses:
+              id: power_consumption_home
+              value: 0
+    web_server:
+      sorting_group_id: sg_config
+      sorting_weight: 10
+
+  - platform: template
+    id: zero_power_consumption_heatpump
+    name: "Reset power consumption heatpump"
+    icon: mdi:button-pointer
+    on_press:
+      then:
+         - pulse_meter.set_total_pulses:
+              id: power_consumption_heatpump
+              value: 0
+    web_server:
+      sorting_group_id: sg_config
+      sorting_weight: 20
