@@ -32,8 +32,8 @@ note left of s0Heatpump
 end note
 
 note bottom of ext1
-    GPIO 3 - Home
-    GPIO 4 - Heatpump
+    GPIO 14 - Home
+    GPIO 15 - Heatpump
 
     with 220 Ohm pull-up resistor to 3.3 V
     per S0 input and 100 nF capacity to GND.

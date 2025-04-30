@@ -1,4 +1,4 @@
-# ESPHome configuration for the IVT Rego 600/601 heat pump controller.
+# ESPHome configuration for the smartmeter project.
 # https://esphome.io/index.html
 esphome:
   name: smartmeter
@@ -7,6 +7,24 @@ esphome:
   project:
     name: "BlueAndi.smartmeter"
     version: "0.1.0"
+  on_boot:
+    then:
+      # Restore the total pulses from the last session.
+      - pulse_meter.set_total_pulses:
+          id: power_consumption_home
+          value: !lambda "return id(total_pulses_home);"
+      - pulse_meter.set_total_pulses:
+          id: power_consumption_heatpump
+          value: !lambda "return id(total_pulses_heatpump);"
+  on_shutdown:
+      then:
+        # Save the total pulses to the global variable.
+        - globals.set:
+            id: total_pulses_home
+            value: !lambda 'return id(power_consumption_home).state;'
+        - globals.set:
+            id: total_pulses_heatpump
+            value: !lambda 'return id(power_consumption_heatpump).state;'
 
 # Platform configuration.
 # https://esphome.io/components/esp32.html
@@ -24,7 +42,7 @@ logger:
 # https://esphome.io/components/api.html
 api:
   password: ""
-  reboot_timeout: 0s
+  #reboot_timeout: 0s
   actions:
     - action: set_total_home
       variables:
@@ -67,7 +85,7 @@ web_server:
 
 # MQTT configuration
 mqtt:
-  broker: homeassistant.fritz.box
+  broker: !secret mqtt_broker
   port: 1883
   username: !secret mqtt_user
   password: !secret mqtt_password
@@ -79,9 +97,26 @@ mqtt:
     topic: smartmeter/status
     payload: "offline"
 
+# Global variables
+# https://esphome.io/components/globals.html
+globals:
+  - id: total_pulses_home
+    type: int
+    restore_value: yes
+  - id: total_pulses_heatpump
+    type: int
+    restore_value: yes
+
+# Preferences
+# https://esphome.io/components/esphome.html#adjusting-flash-writes
+preferences:
+  flash_write_interval: 5min
+
+# Sensor configuration
+# https://esphome.io/components/sensor/index.html
 sensor:
   - platform: pulse_meter
-    pin: GPIO3
+    pin: GPIO14
     name: "Power Consumption Home"
     id: power_consumption_home
     unit_of_measurement: "W"
@@ -95,7 +130,7 @@ sensor:
           name: "Energy Consumption Home"
 
   - platform: pulse_meter
-    pin: GPIO4
+    pin: GPIO15
     name: "Power Consumption Heatpump"
     id: power_consumption_heatpump
     unit_of_measurement: "W"
