@@ -6,7 +6,7 @@ esphome:
   area: Heating room
   project:
     name: "BlueAndi.smartmeter"
-    version: "0.1.0"
+    version: "0.2.0"
   on_boot:
     then:
       # Restore the total pulses from the last session.
@@ -71,7 +71,9 @@ ethernet:
   type: LAN8720
   mdc_pin: GPIO23
   mdio_pin: GPIO18
-  clk_mode: GPIO17_OUT
+  clk:
+    pin: GPIO17
+    mode: CLK_OUT
   phy_addr: 0
   power_pin:
     number: GPIO12
