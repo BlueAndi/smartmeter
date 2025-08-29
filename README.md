@@ -42,22 +42,27 @@ ESPHome is used as the base of the software.
 
 1. Install Python.
 2. Setup [virtual environment](https://docs.python.org/3/library/venv.html).
+
     ```bash
     python -m venv .venv
     ```
+
 3. Activate virtual environment.
    - Windows CMD: ```.venv\Scripts\activate.bat```
    - Windows PowerShell: ```.venv\Scripts\activate.ps1```
    - Linux: ```.venv/Scripts/activate```
 4. Install packages.
+
     ```bash
     pip install -r requirements.txt
     ```
+
 5. Create a ```secrets.yaml``` in the project root folder. Replace **my_user** and **my_password** according to the MQTT broker credentials.
-  ```yaml
-  mqtt_user: my_user
-  mqtt_password: my_password
-  ```
+
+    ```yaml
+    mqtt_user: my_user
+    mqtt_password: my_password
+    ```
 
 ### Build
 
@@ -73,12 +78,10 @@ esphome run smartmeter.yaml
 
 ## API Endpoints and MQTT Topics
 
-```markdown
 | **Name**   | **Description** | **REST API**                          | **MQTT Topic**                           |
 |------------|-----------------|---------------------------------------|------------------------------------------|
 | **s0-1**   | S0-interface    | `http://<IP-ADDRESS>/sensor/s0_1`     | `heatpumpctrl/sensor/s0_1/state`         |
 | **s0-2**   | S0-interface    | `http://<IP-ADDRESS>/sensor/s0_2`     | `heatpumpctrl/sensor/s0_2/state`         |
-```
 
 ## Used Libraries
 
