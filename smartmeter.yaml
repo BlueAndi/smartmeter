@@ -6,7 +6,7 @@ esphome:
   area: Heating room
   project:
     name: "BlueAndi.smartmeter"
-    version: "0.2.0"
+    version: "0.3.0"
   on_boot:
     then:
       # Restore the total pulses from the last session.
@@ -42,7 +42,7 @@ logger:
 # https://esphome.io/components/api.html
 api:
   password: ""
-  #reboot_timeout: 0s
+  reboot_timeout: 0s # If you enable MQTT and you do not use the Native API Component, you must set reboot_timeout: 0s, otherwise the ESP will reboot every 15 minutes because no client connected to the native API.
   actions:
     - action: set_total_home
       variables:
