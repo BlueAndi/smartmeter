@@ -28,7 +28,7 @@ The idea was to have a simple way to get the power consumption of the heatpump a
 
 The [Olimex ESP32-POE-ISO](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware) board with the RS-232 level shifter [Olimex MOD-RS232](https://www.olimex.com/Products/Modules/Interface/MOD-RS232/open-source-hardware) is used.
 
-![Olimex ESP32-POE-ISO pinout](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/resources/ESP32-POE-ISO-GPIO.png)
+![Olimex ESP32-POE-ISO pinout](https://raw.githubusercontent.com/OLIMEX/ESP32-POE-ISO/refs/heads/master/DOCUMENTS/ESP32-POE-ISO-PINOUT.png)
 
 ## Deployment
 
@@ -63,6 +63,21 @@ ESPHome is used as the base of the software.
     mqtt_user: my_user
     mqtt_password: my_password
     ```
+
+6. Optional: For [API encryption](https://esphome.io/components/api/#configuration-variables) between esphome and the device, update the following files:
+   1. ```smartmeter.yaml```: Add the encryption parameter:
+
+        ```yaml
+        api:
+            encryption:
+                key: !secret api_encryption_key
+        ```
+
+   2. ```secrets.yaml```: Generate a key and add it to the ```secrets.yaml```.
+
+        ```yaml
+        api_encryption_key: xxxxxxxxxxxxxxxxxxxxx
+        ```
 
 ### Build
 
